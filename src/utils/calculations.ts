@@ -1,7 +1,32 @@
+export function evaluate(expression: string): number | string {
+    if (!isValid(expression)) return 'SYNTAX ERROR';
+    else if (expression.length == 0) return '';
+    const tokens = postfix(expression);
+    const operandsStack: string[] = [];
+
+    for (let token of tokens) {
+        if (isNum(token)) operandsStack.push(token);
+        else {
+            const n2: number = Number(operandsStack.pop());
+            const n1: number = Number(operandsStack.pop());
+            operandsStack.push(String(solve(n1, n2, token)));
+        }
+    }
+    return Number(operandsStack.pop());
+}
+function solve(n1: number, n2: number, operation: string): number {
+    switch (operation) {
+        case '+': return n1 + n2;
+        case '-': return n1 - n2;
+        case '*': return n1 * n2;
+        case '/': return n1 / n2;
+        default: return NaN;
+    }
+}
+
+
 export function postfix(expression: string): string[] {
     const tokens: string[] = parse(expression);
-    if (!isValid(tokens)) return ['SYNTAX ERROR'];
-    else if (tokens.length == 0) return [''];
     const postfixStack: string[] = [];
     const operationsStack: string[] = [];
 
@@ -34,7 +59,8 @@ export function postfix(expression: string): string[] {
     return postfixStack;
 }
 
-export function isValid(tokens: string[]): boolean {
+export function isValid(expression: string): boolean {
+    const tokens = parse(expression);
     if ([...getOperators(0), '('].includes(tokens[tokens.length - 1])) return false;// if the expression starts with %/*) then it is directly invalid
 
     let openParentheses: number = 0;
