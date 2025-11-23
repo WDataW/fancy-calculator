@@ -1,25 +1,53 @@
 export function evaluate(expression: string): number | string {
-    if (!isValid(expression)) return 'SYNTAX ERROR';
+    if (!isValidSyntax(expression)) return 'SYNTAX ERROR';
     else if (expression.length == 0) return '';
     const tokens = postfix(expression);
     const operandsStack: string[] = [];
-
     for (let token of tokens) {
+
         if (isNum(token)) operandsStack.push(token);
         else {
-            const n2: number = Number(operandsStack.pop());
-            const n1: number = Number(operandsStack.pop());
-            operandsStack.push(String(solve(n1, n2, token)));
+            if (isOperator(token, operators['~'].precedence, true)) {
+                let n1: number = Number(operandsStack.pop());
+                n1 = solve(n1, NaN, token);
+                operandsStack.push(String(n1));
+
+            }
+            else if (isSqrt(token)) {
+                if (token.endsWith('\\')) {// if sqrt operator is used before parenthesis \(1+3) = 2
+                    let n1: number = Number(operandsStack.pop());
+                    const sqrtFrequency = token.length;
+                    for (let i = 0; i < sqrtFrequency; i++)n1 = solve(n1, NaN, '\\');
+                    operandsStack.push(String(n1));
+                    continue;
+                }
+                else {// if sqrt operator is embedded with a number \\16 = 2
+                    let n1: number = Number(token.slice(token.lastIndexOf('\\') + 1));
+                    const sqrtFrequency = (token.lastIndexOf('\\') + 1);
+                    for (let i = 0; i < sqrtFrequency; i++)n1 = solve(n1, NaN, '\\');
+                    operandsStack.push(String(n1));
+                    continue;
+                }
+            } else {
+                const n2: number = Number(operandsStack.pop());
+                const n1: number = Number(operandsStack.pop());
+                operandsStack.push(String(solve(n1, n2, token)));
+            }
         }
     }
     return Number(operandsStack.pop());
 }
 function solve(n1: number, n2: number, operation: string): number {
+
     switch (operation) {
         case '+': return n1 + n2;
         case '-': return n1 - n2;
         case '*': return n1 * n2;
         case '/': return n1 / n2;
+        case '%': return n1 % n2;
+        case '^': return Math.pow(n1, n2);
+        case '\\': return Math.sqrt(n1);
+        case '~': return -n1;
         default: return NaN;
     }
 }
@@ -27,17 +55,17 @@ function solve(n1: number, n2: number, operation: string): number {
 
 export function postfix(expression: string): string[] {
     const tokens: string[] = parse(expression);
+
     const postfixStack: string[] = [];
     const operationsStack: string[] = [];
 
     for (let token of tokens) {
+
         if (isNum(token)) postfixStack.push(token);
         else if (isParenthesis(token)) {
             if (token == '(') operationsStack.push(token);
             else {// if token is ')'
-
-                while (top(operationsStack) != '(') {
-                    console.log(operationsStack);
+                while (top(operationsStack) != '(' && operationsStack.length) {
                     const top = operationsStack.pop();
                     if (top) postfixStack.push(top);
                 }
@@ -45,41 +73,47 @@ export function postfix(expression: string): string[] {
             }
         }
         else if (isOperator(token)) {
-            if (compare(operators[token], operators[top(operationsStack)]) > 0 || top(operationsStack) == '(') operationsStack.push(token) // if the precedence of the token's precedence higher than the precedence of the top of the operationsStack then just push it on top
+            if (compare(operators[token], operators[operationsStack.length ? top(operationsStack).charAt(0) : '']) > 0 || top(operationsStack) == '(' || token == '~') operationsStack.push(token) // if the precedence of the token's precedence higher than the precedence of the top of the operationsStack then just push it on top. ~ negation is always pushed on top
             else {// if the precedence of the token's precedence lower than or equal to the precedence of the top of the operationsStack
-                while (compare(operators[token], operators[top(operationsStack)]) <= 0) {// keep moving operators from operationsStack to postfixStack until the condition fails. 
+                while (compare(operators[token], operators[operationsStack.length ? top(operationsStack).charAt(0) : '']) <= 0) {// keep moving operators from operationsStack to postfixStack until the condition fails. 
                     const top = operationsStack.pop();
                     if (top) postfixStack.push(top);
                 }
                 operationsStack.push(token);// if no more higher precedence operators exist in the operationsStack then push token on top
             }
         }
+        else if (isSqrt(token)) {
+            if (token.endsWith('\\')) operationsStack.push(token)// if token is an sqrt plain operator like \\\\ then push it to the operationsStack 
+            else postfixStack.push(token);// if token is an embedded sqrt like \\\\16 then push it to the postfixStack
+        }
     }
     for (let i = operationsStack.length - 1; i > -1; i--) postfixStack.push(operationsStack[i]); // push any leftover operations from operationsStack into postfixStack
+
     return postfixStack;
 }
 
-export function isValid(expression: string): boolean {
+export function isValidSyntax(expression: string): boolean {
+    if (expression.includes('~')) return false; // - unary operator should be expressed using - not ~ (even though it is interpreted as ~ in the parser)
+    if (isOperator(expression.charAt(expression.length - 1)) || isOperator(expression.charAt(0)) && !['\\', '-', '+'].includes(expression.charAt(0))) return false;// if it starts or ends with an operator then it is invalid (note: expression can start with unary operators as \+-)
     const tokens = parse(expression);
-    if ([...getOperators(0), '('].includes(tokens[tokens.length - 1])) return false;// if the expression starts with %/*) then it is directly invalid
-
     let openParentheses: number = 0;
     let closingParentheses: number = 0;
     let invalidTokens: number = 0;
+
     let prevToken = '';
     for (let token of tokens) {
         if (isOperator(token)) {
-            if (isOperator(prevToken)) return false;
+            if (isOperator(prevToken) && !token.startsWith('\\') && token != '~') return false;// +\num is allowed but +*num isn't. unary - is also allowed as 1+-1 \-1
         }
         else if (isParenthesis(token)) {
             if (token == '(') {
-                if (isNum(prevToken)) return false; // num( is invalid
                 openParentheses++;
             } else if (token == ')') {
                 if (isOperator(prevToken) || prevToken == '(') return false; // +) () or similar cases are invalid
                 closingParentheses++
             }
-        } else if (!isNum(token)) {// if the token is not number nor an operator nor a parenthesis then it is invalid
+        } else if (isNum(token) && prevToken == ')') return false;
+        else if (!isNum(token) && !isSqrt(token)) {// if the token is not number nor an operator nor a parenthesis nor an sqrt operation then it is invalid
             invalidTokens++;
         }
         if (closingParentheses > openParentheses || invalidTokens != 0) return false; // a closing parenthesis before the presence of an opening one is invalid
@@ -88,32 +122,47 @@ export function isValid(expression: string): boolean {
     return closingParentheses == openParentheses;// if the amounts of parentheses don't match then it is invalid
 }
 
+
 export function parse(expression: string): string[] {
     const tokens: string[] = [];
     let operand: string = '';
     expression = expression.replaceAll(' ', '');
     for (let char of expression.split('')) {
-
-        if (!isNum(char) && char != '.') {// true = char isn't a number 
-            if (operand == '' && (isOperator(char) && !tokens.length || isOperator(char) && tokens[tokens.length - 1] == '(' || isOperator(tokens[tokens.length - 1]) && isOperator(char))) {// in the case of -1, (-1), or + -1 consider the operator a part of the number
-                operand += char;
-                continue;
+        if (!isNum(char) && char != '.') {// if char isn't a number 
+            if ((operand == '' || operand.endsWith('\\')) && isOperator(char, 1, true) && (!tokens.length || tokens[tokens.length - 1] == '(' || isOperator(tokens[tokens.length - 1]))) {// to allow for unary negation as (-4) = -4. while unary + is always ignored
+                if (char == '-') {
+                    if (operand) tokens.push(operand);
+                    operand = '';
+                    tokens.push('~');// unary minus
+                }
             }
-            else if (operand) tokens.push(operand); // push any existing operands before pushing the operator.
-            operand = ''; // reset the oparand for future use.
+            else {
+                if (operand) {
+                    tokens.push(operand); // push any existing operands before pushing the operator.
+                    operand = '';// reset the oparand for future use.
 
-            tokens.push(char); // push the operator
-        } else {
+                }
+                if ((char == '(' || char == '\\') && tokens.length && (isNum(top(tokens)) || top(tokens) == ')' || (isSqrt(top(tokens))) && !top(tokens).endsWith('\\'))) tokens.push('*');// to allow for implicit multiplication 1(5)=5 \4(2)=4 (1)(4)=4
+                tokens.push(char); // push the operator
+            }
+        } else {// if char is a number
             operand += char;
         }
     }
-    if (operand) tokens.push(operand); // push any remaining operands
+    if (operand) tokens.push(operand); // push any remaining operands before returning
     return tokens;
 }
 
-function isNum(str: string): boolean {
+export function isNum(str: string): boolean {
     return str != '' && !isNaN(Number(str)) && isFinite(Number(str));
 }
+function isSqrt(str: string): boolean {// returns if if str is similar '\\\\\\\\\' or '\\\\\numbers'
+    const sqrtOperatorRegex = /^\\+$/;// fully made if \\ to allow for multiple level square roots
+    const isSqrtOperator = sqrtOperatorRegex.test(str);
+
+    return str.startsWith('\\') && isNum((str.slice(str.lastIndexOf('\\') + 1))) || isSqrtOperator;
+}
+
 
 type operator = {
     precedence: number;
@@ -133,10 +182,19 @@ const operators: { [key: string]: operator } = {
     },
     '%': {
         precedence: 2
+    },
+    '^': {
+        precedence: 6
+    },
+    '\\': {// square root
+        precedence: 6
+    },
+    '~': {// unary negation
+        precedence: 5
     }
 }
-function isOperator(str: string): boolean {
-    const operatorsArr: string[] = getOperators(0);
+function isOperator(str: string, ofPrecedence: number = 0, exactMatch: boolean = false): boolean {
+    const operatorsArr: string[] = getOperators(ofPrecedence, exactMatch);
     return operatorsArr.includes(str);
 }
 
