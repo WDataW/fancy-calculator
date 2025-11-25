@@ -1,6 +1,12 @@
-export function evaluate(expression: string): number | string {
+export function calculate(expression: string): string {
     if (!isValidSyntax(expression)) return 'SYNTAX ERROR';
-    else if (expression.length == 0) return '';
+    if (expression.length == 0) return '';
+
+    const result: string = String(evaluate(expression));
+    if (!isNum(result)) return 'MATH ERROR'
+    return result
+}
+function evaluate(expression: string): number {
     const tokens = postfix(expression);
     const operandsStack: string[] = [];
     for (let token of tokens) {
@@ -53,7 +59,7 @@ function solve(n1: number, n2: number, operation: string): number {
 }
 
 
-export function postfix(expression: string): string[] {
+function postfix(expression: string): string[] {
     const tokens: string[] = parse(expression);
 
     const postfixStack: string[] = [];
@@ -92,7 +98,7 @@ export function postfix(expression: string): string[] {
     return postfixStack;
 }
 
-export function isValidSyntax(expression: string): boolean {
+function isValidSyntax(expression: string): boolean {
     if (expression.includes('~')) return false; // - unary operator should be expressed using - not ~ (even though it is interpreted as ~ in the parser)
     if (isOperator(expression.charAt(expression.length - 1)) || isOperator(expression.charAt(0)) && !['\\', '-', '+'].includes(expression.charAt(0))) return false;// if it starts or ends with an operator then it is invalid (note: expression can start with unary operators as \+-)
     const tokens = parse(expression);
@@ -123,7 +129,7 @@ export function isValidSyntax(expression: string): boolean {
 }
 
 
-export function parse(expression: string): string[] {
+function parse(expression: string): string[] {
     const tokens: string[] = [];
     let operand: string = '';
     expression = expression.replaceAll(' ', '');
@@ -153,7 +159,7 @@ export function parse(expression: string): string[] {
     return tokens;
 }
 
-export function isNum(str: string): boolean {
+function isNum(str: string): boolean {
     return str != '' && !isNaN(Number(str)) && isFinite(Number(str));
 }
 function isSqrt(str: string): boolean {// returns if if str is similar '\\\\\\\\\' or '\\\\\numbers'
