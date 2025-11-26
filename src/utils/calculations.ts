@@ -215,7 +215,9 @@ function compare(operator1: operator = { precedence: 0 }, operator2: operator = 
 function isParenthesis(str: string): boolean {
     return ['(', ')'].includes(str);
 }
-
+export function isError(str: string) {
+    return str.toLocaleLowerCase().includes('error');
+}
 
 function getOperators(precedence: number, exact: boolean = false): string[] {
     const operatorsArr: string[] = [];
