@@ -26,10 +26,10 @@ export default function Keypad({ className = '', setExpression, ...props }: Prop
         setExpression(prevExpression => isError(prevExpression) ? ans : prevExpression + ans);
     }
     return (
-        <div className={`w-full select-none grid gap-[0.1rem] grid-cols-4 ${className}`} {...props}>
+        <div className={`w-full p-[1rem]  select-none grid gap-[0.4rem] grid-cols-4 ${className}`} {...props}>
             <Token setExpression={setExpression} value='(' />
             <Token setExpression={setExpression} value=')' />
-            <Control onClick={clear} value='Clear'></Control>
+            <Control onClick={clear} value='C'></Control>
             <Control onClick={backspace} value='Del'></Control>
             <Token setExpression={setExpression} value='1' />
             <Token setExpression={setExpression} value='2' />

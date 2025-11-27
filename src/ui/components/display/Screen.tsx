@@ -4,7 +4,8 @@ type Props = {
 }
 export default function Screen({ className = '', expression, ...props }: Props) {
     return (
-        <div className={`w-full px-[1rem] py-[0.2rem] text-[1.5rem] h-12 bg-white ${className}`} {...props}>
+
+        <div className={`bg-[var(--color-screen-bg)] w-full px-[1rem] rounded-t-[1.4rem] overflow-hidden    py-[0.4rem] text-[1.5rem] text-white h-[6rem]  ${className}`} {...props}>
             {expression}
         </div>
     );
