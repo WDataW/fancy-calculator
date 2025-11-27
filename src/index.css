@@ -1,5 +1,11 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'DIG';
+  src: url('./assets/fonts/Digital-7.woff2'),
+    url('./assets/fonts/Digital-7.woff2');
+}
+
 :root {
   --color-page-bg: #030B16;
   --color-calc-bg: #0C1420;
