@@ -1,39 +1,55 @@
-import { useState } from 'react';
+import { useState, type SetStateAction } from 'react';
 import { calculate, isError } from '../../../utils/calculations';
 import { Token, Control } from '../buttons';
+import type { Blinker } from '../../Calculator';
 
 type Props = {
     className?: string;
     setExpression: React.Dispatch<React.SetStateAction<string>>;
-    setResult: React.Dispatch<React.SetStateAction<string>>
-
+    setResult: React.Dispatch<React.SetStateAction<string>>;
+    blinker: Blinker;
+    expression: string;
+    setBlinker: React.Dispatch<SetStateAction<Blinker>>;
 }
-export default function Keypad({ className = '', setResult, setExpression, ...props }: Props) {
+export default function Keypad({ className = '', blinker, setBlinker, setResult, expression, setExpression, ...props }: Props) {
     const [ans, setAns] = useState<string>('');
+    function writeAtBlinker(token: string): string {
+        const expressionStart: string = expression.slice(0, blinker.start);
+        const expressionEnd: string = expression.slice(blinker.end, expression.length);
+        setBlinker((prevBlinker) => ({ start: prevBlinker.start + token.length, end: prevBlinker.start + token.length }));
+        return expressionStart + token + expressionEnd;
+    }
     function write(token: string): void {
-        setExpression((prevExpression) => isError(prevExpression) ? token.charAt(0) : prevExpression + token.charAt(0));// if previous expression was an error then replace it with the token, else add token to the existing expression
-        setResult('');
+        const newExpression: string = writeAtBlinker(token);
+        setExpression(newExpression);
     }
     function clear(): void {
         setExpression('');
-        setResult('');
+        setBlinker({ start: 0, end: 0 });
     }
-    function backspace(): void {
-        setExpression(prevExpression => isError(prevExpression) ? '' : prevExpression.slice(0, prevExpression.length - 1));// if previous expression is an error then erase it completely
-        setResult('');
+    function backspace(): void {//fix
+        if (blinker.start == blinker.end) {// if the blinker is at a specific position, then delete the token before it
+            const newBlinkerPosition = blinker.start > 0 ? blinker.start - 1 : 0;
+            const startExpression: string = expression.slice(0, newBlinkerPosition);
+            const endExpression: string = expression.slice(blinker.end, expression.length);
+            setExpression(startExpression + endExpression);
+            setBlinker({ start: newBlinkerPosition, end: newBlinkerPosition });
+        } else {// if text is selected, then delete the selected text
+            const startExpression: string = expression.slice(0, blinker.start);
+            const endExpression: string = expression.slice(blinker.end, expression.length);
+            setExpression(startExpression + endExpression);
+            setBlinker({ start: blinker.start, end: blinker.start });
+        }
     }
     function equals(): void {
-        setExpression(prevExpression => {// using setExpression just to access the value of expression.
-            const result = calculate(prevExpression);
-            setResult(result);
-            if (!isError(result)) setAns(result);// if result is an error then don't set it to ans 
-            return prevExpression;
-        });
+        const result = calculate(expression);
+        setResult(result);
+        if (!isError(result)) setAns(result);// if result is an error then don't set it to ans 
+
     }
     function insertAns(): void {
-        setExpression(prevExpression => isError(prevExpression) ? ans : prevExpression + ans);
-        setResult('');
-
+        const newExpression = writeAtBlinker(ans);
+        setExpression(newExpression);
     }
     return (
         <div className={`w-full p-[1rem]  select-none grid gap-[0.4rem] grid-cols-4 ${className}`} {...props}>
@@ -59,7 +75,7 @@ export default function Keypad({ className = '', setResult, setExpression, ...pr
             <Token write={write} value='/' />
             <Token write={write} value='\' />
             <Token write={write} value='^' />
-            <Token write={setExpression} value='%' />
+            <Token write={write} value='%' />
             <Control onClick={equals} value='='></Control>
         </div>
     );
