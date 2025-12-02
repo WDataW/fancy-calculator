@@ -38,7 +38,7 @@ export default function Screen({ className = '', result, setBlinker, setExpressi
         }
     }, []);
     return (
-        <div className={` text-nowrap leading-none flex flex-col justify-between selection:bg-[#C01A92] bg-[var(--color-screen-bg)] font-[DIG] w-full px-[0.85rem] py-[0.8rem] rounded-t-[1.4rem] overflow-hidden  text-[1.7rem] text-white h-[6rem]  ${className}`} {...props}>
+        <div className={` text-nowrap leading-none flex flex-col justify-between selection:bg-[var(--color-accent-1)] bg-[var(--color-screen-bg)] font-[DIG] w-full px-[0.85rem] py-[0.8rem] rounded-t-[1.4rem] overflow-hidden  text-[1.7rem] text-white h-[6rem]  ${className}`} {...props}>
             <input className="indent-[0.2rem] outline-none w-full text-glow" ref={inputRef} onChange={(e) => setExpression(e.target.value)} value={expression} type="text" />
             {expression && <p className="text-end pe-[0.15rem] w-full text-glow">{result}</p>}
         </div>

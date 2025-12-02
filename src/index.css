@@ -8,8 +8,12 @@
 
 :root {
   --color-page-bg: #030B16;
-  --color-calc-bg: #0C1420;
+  --color-calc-gradient-primary: #0C1420;
   --color-screen-bg: #000813;
+  --color-calc-gradient-secondary: #151f2d;
+  --color-button-bg: #1B232E;
+  --color-button-box-shadow: rgba(79, 85, 93, 0.25);
+  --color-accent-1: #C01A92;
 }
 
 @layer components {
@@ -19,5 +23,9 @@
 
   .text-glow {
     text-shadow: 1px 0 5px rgba(255, 255, 255, 0.3), -1px 0 5px rgba(255, 255, 255, 0.3);
+  }
+
+  .button-inset-shadow {
+    box-shadow: inset 1px 1px 2px var(--color-button-box-shadow);
   }
 }
