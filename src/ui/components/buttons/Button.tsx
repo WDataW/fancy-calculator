@@ -4,7 +4,7 @@ type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 }
 export default function Button({ children, className = ' ', ...props }: Props) {
     return (
-        <button className={`text-[#48505B] button-inset-shadow  bg-[var(--color-button-bg)] cursor-pointer rounded-[0.4rem] sm:rounded-[0.6rem] aspect-3/2  ${className}`} {...props}>
+        <button className={`text-[#48505B] button-inset-shadow   cursor-pointer rounded-[0.4rem] sm:rounded-[0.6rem] aspect-3/2  ${className}`} {...props}>
             {children}
         </button>
     );

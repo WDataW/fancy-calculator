@@ -7,7 +7,7 @@ type Props = {
 }
 export default function Control({ className, value, ...props }: Props) {
     return (
-        <Button title={value}  {...props}>
+        <Button className="bg-[var(--color-control-button-bg)] " title={value}  {...props}>
             {value}
         </Button>
     );
