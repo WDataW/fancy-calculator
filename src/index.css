@@ -8,7 +8,11 @@
 
 :root {
   --color-accent-1: #C01A92;
+  --color-accent-1-shadow: #ff00b75e;
   --color-accent-2: #b813de;
+  --color-accent-2-shadow: #b913de5f;
+  --color-accent-3: #ff00b7;
+  --color-accent-3-shadow: #ff00b77b;
   --color-text-dull: #48505B;
   --color-page-bg: #030B16;
   --color-screen-bg: #000813;
@@ -24,8 +28,24 @@
     @apply m-0 p-0;
   }
 
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+
   .text-glow {
     text-shadow: 1px 0 5px rgba(255, 255, 255, 0.3), -1px 0 5px rgba(255, 255, 255, 0.3);
+  }
+
+  .text-glow-accent-1 {
+    text-shadow: 1px 0 5px var(--color-accent-1-shadow), -1px 0 5px var(--color-accent-1-shadow);
+  }
+
+  .text-glow-accent-2 {
+    text-shadow: 1px 0 5px var(--color-accent-2-shadow), -1px 0 5px var(--color-accent-2-shadow);
+  }
+
+  .text-glow-accent-3 {
+    text-shadow: 1px 0 5px var(--color-accent-3-shadow), -1px 0 5px var(--color-accent-3-shadow);
   }
 
   .button-inset-shadow {

@@ -5,10 +5,10 @@ import type { Blinker } from '../../Calculator';
 
 type Props = {
     className?: string;
+    expression: string;
     setExpression: React.Dispatch<React.SetStateAction<string>>;
     setResult: React.Dispatch<React.SetStateAction<string>>;
     blinker: Blinker;
-    expression: string;
     setBlinker: React.Dispatch<SetStateAction<Blinker>>;
 }
 export default function Keypad({ className = '', blinker, setBlinker, setResult, expression, setExpression, ...props }: Props) {
@@ -48,11 +48,12 @@ export default function Keypad({ className = '', blinker, setBlinker, setResult,
 
     }
     function insertAns(): void {
+        if (ans == '') return;// if there is no previous answer stored then don't allow for Ans button functionality
         const newExpression = writeAtBlinker(ans);
         setExpression(newExpression);
     }
     return (
-        <div className={`w-full p-[1rem]  select-none grid gap-[0.4rem] grid-cols-4 ${className}`} {...props}>
+        <div onMouseDown={(e) => e.preventDefault()} className={`w-full p-[1rem]  select-none grid gap-[0.4rem] grid-cols-4 ${className}`} {...props}>
             <Token write={write} value='(' />
             <Token write={write} value=')' />
             <Control onClick={clear} value='C'></Control>
