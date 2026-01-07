@@ -118,7 +118,7 @@ export default function Screen({ className = '', result, blinker, setBlinker, se
     return (
         <div className={` text-nowrap flex flex-col justify-between selection:bg-[var(--color-accent-1)] bg-[var(--color-screen-bg)] font-[DIG] w-full px-[0.85rem]  pt-[0.2rem] sm:pt-[0.3rem] pb-[0.3rem] rounded-t-[1.4rem] overflow-hidden  text-[1.7rem]  h-[6rem]  ${className}`} {...props}>
             <div className="relative indent-[0.2rem]">
-                <input autoFocus onScroll={handleInputScroll} className="absolute z-10 caret-white selection:text-white text-transparent pe-[0.85rem] outline-none w-full  " ref={inputRef} onChange={(e) => setExpression(e.target.value)} value={expression} type="text" />
+                <input onScroll={handleInputScroll} className="absolute z-10 caret-white selection:text-white text-transparent pe-[0.85rem] outline-none w-full  " ref={inputRef} onChange={(e) => setExpression(e.target.value)} value={expression} type="text" />
                 <div ref={divRef} className="scrollbar-none  pe-[0.85rem] select-none overflow-x-scroll transition text-glow text-white ">
                     {expression.slice(0, beforeBlinker)}
                     <motion.span className="text-start text-glow-accent-3" key={motionSpanKey} initial={{ color: 'rgb(255,255,255)' }} animate={{ color: 'var(--color-accent-3)' }}>{expression.slice(beforeBlinker, blinker.start)}</motion.span>

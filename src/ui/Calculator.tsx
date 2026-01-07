@@ -18,7 +18,7 @@ export default function Calculator({ className = '', ...props }: Props) {
     }, [expression]);
 
     return (
-        <div className={`${className} bg-linear-to-br from-[var(--color-calc-gradient-secondary)]  to-40% to-[var(--color-calc-gradient-primary)] p-[0.1rem]  rounded-[1.5rem] w-[18rem] `} {...props}>
+        <div className={`${className} bg-linear-to-br from-[var(--color-calc-gradient-secondary)]  to-40% to-[var(--color-calc-gradient-primary)] p-[0.1rem]  rounded-[1.5rem] w-[calc(100%-2rem)] max-w-[19rem] `} {...props}>
             <Screen result={result} blinker={blinker} setBlinker={setBlinker} setExpression={setExpression} expression={expression}></Screen>
             <Keypad className="mt-[0.1rem]" blinker={blinker} setBlinker={setBlinker} setResult={setResult} expression={expression} setExpression={setExpression}></Keypad>
         </div>
