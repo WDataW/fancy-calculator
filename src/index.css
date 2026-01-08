@@ -24,9 +24,19 @@
 }
 
 @layer components {
+
   #root {
-    @apply m-0 p-0;
+    @apply m-0 p-0 min-h-full;
+
   }
+
+  html,
+  body {
+    @apply sm:text-[2.8vh];
+    height: 100dvh;
+    background-color: var(--color-page-bg);
+  }
+
 
   .scrollbar-none {
     scrollbar-width: none;
