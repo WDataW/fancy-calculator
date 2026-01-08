@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import type { Blinker } from "../../Calculator";
+import { useEffect, useRef } from 'react';
+import type { Blinker } from '../../Calculator';
 import { motion } from 'motion/react';
 import { v4 as randomUUID } from 'uuid';
 type Props = {
@@ -117,15 +117,15 @@ export default function Screen({ className = '', result, blinker, setBlinker, se
     }, [blinker]);
     return (
         <div className={` text-nowrap flex flex-col justify-between selection:bg-[var(--color-accent-1)] bg-[var(--color-screen-bg)] font-[DIG] w-full px-[0.85rem]  pt-[0.2rem] sm:pt-[0.3rem] pb-[0.3rem] rounded-t-[1.4rem] overflow-hidden  text-[1.7rem]  h-[6rem]  ${className}`} {...props}>
-            <div className="relative indent-[0.2rem]">
-                <input onScroll={handleInputScroll} className="absolute z-10 caret-white selection:text-white text-transparent pe-[0.85rem] outline-none w-full  " ref={inputRef} onChange={(e) => setExpression(e.target.value)} value={expression} type="text" />
-                <div ref={divRef} className="scrollbar-none  pe-[0.85rem] select-none overflow-x-scroll transition text-glow text-white ">
+            <div className='relative indent-[0.2rem]'>
+                <input onScroll={handleInputScroll} className='absolute z-10 caret-white selection:text-white text-transparent pe-[0.85rem] outline-none w-full  ' ref={inputRef} onChange={(e) => setExpression(e.target.value)} value={expression} type='text' />
+                <div ref={divRef} className='scrollbar-none  pe-[0.85rem] select-none overflow-x-scroll transition text-glow text-white '>
                     {expression.slice(0, beforeBlinker)}
-                    <motion.span className="text-start text-glow-accent-3" key={motionSpanKey} initial={{ color: 'rgb(255,255,255)' }} animate={{ color: 'var(--color-accent-3)' }}>{expression.slice(beforeBlinker, blinker.start)}</motion.span>
+                    <motion.span className='text-start text-glow-accent-3' key={motionSpanKey} initial={{ color: 'rgb(255,255,255)' }} animate={{ color: 'var(--color-accent-3)' }}>{expression.slice(beforeBlinker, blinker.start)}</motion.span>
                     {expression.slice(blinker.start)}
                 </div>
             </div>
-            {expression && <p className="text-white text-end pe-[0.15rem] w-full text-glow">{result}</p>}
+            {expression && <p className='text-white text-end pe-[0.15rem] w-full text-glow'>{result}</p>}
         </div >
     );
 }

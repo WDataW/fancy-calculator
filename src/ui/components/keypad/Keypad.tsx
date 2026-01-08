@@ -1,4 +1,4 @@
-import { useState, type SetStateAction } from 'react';
+import { useEffect, useState, type SetStateAction } from 'react';
 import { calculate, isError } from '../../../utils/calculations';
 import { Token, Control } from '../buttons';
 import type { Blinker } from '../../Calculator';
@@ -41,12 +41,20 @@ export default function Keypad({ className = '', blinker, setBlinker, setResult,
             setBlinker({ start: blinker.start, end: blinker.start });
         }
     }
+    useEffect(() => {// pressing Enter key = calculate result
+        window.addEventListener('keydown', handleEnter);
+        return () => window.removeEventListener('keydown', handleEnter);
+    }, [expression]);
+    function handleEnter(e: KeyboardEvent): void {
+        if (e.key == 'Enter') equals();
+    }
     function equals(): void {
+        if (expression == '') return;
         const result = calculate(expression);
         setResult(result);
         if (!isError(result)) setAns(result);// if result is an error then don't set it to ans 
-
     }
+
     function insertAns(): void {
         if (ans == '') return;// if there is no previous answer stored then don't allow for Ans button functionality
         const newExpression = writeAtBlinker(ans);
@@ -57,7 +65,7 @@ export default function Keypad({ className = '', blinker, setBlinker, setResult,
             <Token write={write} value='(' />
             <Token write={write} value=')' />
             <Control onClick={clear} value='C'></Control>
-            <Control onClick={backspace} value='Del'></Control>
+            <Control onClick={backspace} value='D'></Control>
             <Token write={write} value='1' />
             <Token write={write} value='2' />
             <Token write={write} value='3' />

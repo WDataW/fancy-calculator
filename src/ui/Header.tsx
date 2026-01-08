@@ -1,4 +1,4 @@
-import { Discord, Github } from "./components/anchors";
+import { Discord, Github } from './components/anchors';
 
 type Props = {
     className?: string;

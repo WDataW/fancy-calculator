@@ -1,3 +1,4 @@
+// evaluates the expression while accounting for the different possible errors
 export function calculate(expression: string): string {
     if (!isValidSyntax(expression)) return 'SYNTAX ERROR';
     if (expression.length == 0) return '';
@@ -6,11 +7,12 @@ export function calculate(expression: string): string {
     if (!isNum(result)) return 'MATH ERROR'
     return result
 }
+
+// evaluates the expression with no regard to errors (make sure the expression is a valid math expression before using)
 function evaluate(expression: string): number {
     const tokens = postfix(expression);
     const operandsStack: string[] = [];
     for (let token of tokens) {
-
         if (isNum(token)) operandsStack.push(token);
         else {
             if (isOperator(token, operators['~'].precedence, true)) {
@@ -44,7 +46,6 @@ function evaluate(expression: string): number {
     return Number(operandsStack.pop());
 }
 function solve(n1: number, n2: number, operation: string): number {
-
     switch (operation) {
         case '+': return n1 + n2;
         case '-': return n1 - n2;
@@ -94,7 +95,6 @@ function postfix(expression: string): string[] {
         }
     }
     for (let i = operationsStack.length - 1; i > -1; i--) postfixStack.push(operationsStack[i]); // push any leftover operations from operationsStack into postfixStack
-
     return postfixStack;
 }
 
@@ -134,12 +134,14 @@ function parse(expression: string): string[] {
     let operand: string = '';
     expression = expression.replaceAll(' ', '');
     for (let char of expression.split('')) {
-        if (!isNum(char) && char != '.') {// if char isn't a number 
-            if ((operand == '' || operand.endsWith('\\')) && isOperator(char, 1, true) && (!tokens.length || tokens[tokens.length - 1] == '(' || isOperator(tokens[tokens.length - 1]))) {// to allow for unary negation as (-4) = -4. while unary + is always ignored
+        if (!isNum(char) && char != '.') {// if char isn't a number <\> \16  tokens[]  operand''
+            if ((operand == '' || operand.endsWith('\\')) && (isOperator(char, 1, true) || isSqrt(char)) && (!tokens.length || tokens[tokens.length - 1] == '(' || isOperator(tokens[tokens.length - 1]))) {// to allow for unary negation as (-4) = -4. while unary + is always ignored
                 if (char == '-') {
                     if (operand) tokens.push(operand);
                     operand = '';
                     tokens.push('~');// unary minus
+                } else {
+                    operand += char;
                 }
             }
             else {
