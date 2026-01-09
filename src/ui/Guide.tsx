@@ -10,7 +10,7 @@ function Note({ title, content }: { title: string, content: JSX.Element }) {
 }
 export default function Guide({ className = '', ...props }: Props) {
     return (
-        <div className={` px-[1rem] py-[0.5rem] w-full max-w-[19rem] rounded-[1.5rem] border-2 text-[var(--color-calc-gradient-secondary)] sm:h-[94%] ${className}`} {...props}>
+        <div className={` px-[1rem] py-[0.5rem] w-full max-w-[19rem] rounded-[1.5rem] bg-[#0D1622] sm:h-[93.8%] ${className}`} {...props}>
             <h1 className='text-white font-bold text-[1.2rem] pb-[0.2rem] border-b mb-[0.5rem]'>Quick Guide</h1>
             <div className='flex flex-col gap-[0.7rem] justify-between '>
                 <Note title='C' content={<>Clears all inputs (Ans is maintained).</>} />
