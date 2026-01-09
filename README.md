@@ -15,7 +15,11 @@ Cocolater is a modern-looking calculator app, with an impressive design (shoutou
  [cocolater.vercel.app](https://cocolater.vercel.app/)
 
 ## Preview
-![Screenshot](./public/previewScreenshot.png)
+### Desktop
+![Desktop](./public/desktopPreview.png)
+
+### Mobile
+<img src='./public/mobilePreview.jpg' width='300' />
 
 ## Technologies:
   1. **React + Typescript**
